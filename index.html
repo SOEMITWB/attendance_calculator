@@ -3,69 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Alif S0 - Attendance Calculator</title>
+  <title>Attendance Calculator[S0-ALIF]</title>
   <style>
+    :root {
+      --bg: #f4f7fb;
+      --text: #333;
+      --card: #ffffff;
+      --highlight: #1976d2;
+      --button-hover: #1565c0;
+      --result-bg: #e3f2fd;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #121212;
+        --text: #e0e0e0;
+        --card: #1e1e1e;
+        --highlight: #90caf9;
+        --button-hover: #64b5f6;
+        --result-bg: rgba(144, 202, 249, 0.15);
+      }
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      margin: 0;
+      transition: background 0.3s, color 0.3s;
     }
+
     .container {
-      background: white;
+      background: var(--card);
       padding: 25px 30px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
       width: 380px;
+      transition: background 0.3s, box-shadow 0.3s;
     }
+
     h2 {
       text-align: center;
-      color: #1976d2;
+      color: var(--highlight);
       margin-bottom: 15px;
+      transition: color 0.3s;
     }
+
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
+
     input[type="time"], select {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      background: var(--card);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
     }
+
     button {
       margin-top: 20px;
       width: 100%;
       padding: 10px;
-      background: #1976d2;
+      background: var(--highlight);
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-size: 16px;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background: #1565c0;
+      background: var(--button-hover);
     }
+
     .result {
       margin-top: 20px;
       padding: 10px;
-      background: #e3f2fd;
+      background: var(--result-bg);
       border-radius: 6px;
       text-align: center;
       line-height: 1.6;
       font-weight: bold;
+      transition: background 0.3s;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>S0 Attendance (non-design) Calculator</h2>
+    <h2>S0 Attendance (Non-Design) Calculator</h2>
 
     <label for="clockIn">Clock In Time:</label>
     <input type="time" id="clockIn" value="07:00">
@@ -109,10 +145,9 @@
         return;
       }
 
-      // Base schedule (Non-Design Group 1)
       const baseStart = { h: 7, m: 0 };
       const baseHalf = { h: 11, m: 45 };
-      const baseOut = { h: 16, m: 30 }; // 4:30 PM
+      const baseOut = { h: 16, m: 30 };
 
       const [h, m] = clockIn.split(":").map(Number);
       const diffMinutes = (h - baseStart.h) * 60 + (m - baseStart.m);
@@ -128,9 +163,7 @@
       let halfDay = addMinutes(baseHalf, diffMinutes);
       let fullOut = addMinutes(baseOut, diffMinutes);
 
-      // OT calculation (each OT hour = +1h10m)
       const otMinutes = otHours > 0 ? (otHours * 60) + 10 : 0;
-
       let resultHTML = "";
       let totalWorkMinutes = 0;
 
@@ -143,7 +176,6 @@
           <div>Clock-Out: <strong>${formatTime(fullOut.h, fullOut.m)}</strong></div>
         `;
       } else if (leaveType === "1st") {
-        // Only second half (4h45m) + OT
         let secondHalfIn = halfDay;
         let secondHalfOut = addMinutes(secondHalfIn, 4 * 60 + 45 + otMinutes);
         totalWorkMinutes = (4.75 * 60) + otMinutes;
@@ -153,7 +185,6 @@
           <div>Clock-Out: <strong>${formatTime(secondHalfOut.h, secondHalfOut.m)}</strong></div>
         `;
       } else if (leaveType === "2nd") {
-        // Only first half (4h45m) + OT
         let firstHalfOut = addMinutes(halfDay, otMinutes);
         totalWorkMinutes = (4.75 * 60) + otMinutes;
         resultHTML = `
@@ -163,7 +194,6 @@
         `;
       }
 
-      // Add total working hours info
       const totalH = Math.floor(totalWorkMinutes / 60);
       const totalM = totalWorkMinutes % 60;
       resultHTML += `<div>Total Working Time: <strong>${totalH}h ${totalM}m</strong></div>`;
@@ -179,4 +209,3 @@
   </script>
 </body>
 </html>
-
