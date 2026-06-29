@@ -1,211 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Attendance Calculator[S0-ALIF]</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>S0 Attendance Calculator | ALIF</title>
+
   <style>
     :root {
-      --bg: #f4f7fb;
-      --text: #333;
-      --card: #ffffff;
-      --highlight: #1976d2;
-      --button-hover: #1565c0;
-      --result-bg: #e3f2fd;
+      --bg: #050505;
+      --card: #101010;
+      --card-soft: #181818;
+      --text: #f5f5f5;
+      --muted: #9ca3af;
+      --line: #2a2a2a;
+      --accent: #4da3ff;
+      --accent-dark: #1f6feb;
+      --white: #ffffff;
+      --shadow: rgba(0, 0, 0, 0.65);
+      --success: #7dd3fc;
     }
 
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #121212;
-        --text: #e0e0e0;
-        --card: #1e1e1e;
-        --highlight: #90caf9;
-        --button-hover: #64b5f6;
-        --result-bg: rgba(144, 202, 249, 0.15);
-      }
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(77, 163, 255, 0.16), transparent 28%),
+        linear-gradient(135deg, #000000, #080808 45%, #111111);
       color: var(--text);
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      margin: 0;
-      transition: background 0.3s, color 0.3s;
+      padding: 22px;
     }
 
-    .container {
-      background: var(--card);
-      padding: 25px 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-      width: 380px;
-      transition: background 0.3s, box-shadow 0.3s;
+    .app {
+      width: 100%;
+      max-width: 480px;
     }
 
-    h2 {
+    .card {
+      background: linear-gradient(180deg, #151515, #090909);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 18%;
+      right: 18%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .header {
+      padding: 30px 26px 24px;
       text-align: center;
-      color: var(--highlight);
-      margin-bottom: 15px;
-      transition: color 0.3s;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.06), transparent),
+        #0b0b0b;
+    }
+
+    .logo-wrap {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 16px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #333;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 25%, rgba(255,255,255,0.2), transparent 28%),
+        linear-gradient(145deg, #1f1f1f, #050505);
+      box-shadow:
+        inset 0 0 20px rgba(255,255,255,0.04),
+        0 0 30px rgba(77, 163, 255, 0.18);
+    }
+
+    .logo {
+      width: 66px;
+      height: 66px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      letter-spacing: 1.8px;
+      font-weight: 700;
+      color: var(--white);
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+    }
+
+    .sony-line {
+      width: 70px;
+      height: 2px;
+      background: var(--accent);
+      margin: 16px auto 0;
+      border-radius: 999px;
+      box-shadow: 0 0 14px rgba(77, 163, 255, 0.8);
+    }
+
+    .content {
+      padding: 26px;
+    }
+
+    .field {
+      margin-bottom: 17px;
     }
 
     label {
       display: block;
-      margin-top: 15px;
-      font-weight: bold;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
     }
 
-    input[type="time"], select {
+    input,
+    select {
       width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background: var(--card);
+      padding: 13px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #070707;
       color: var(--text);
-      transition: background 0.3s, color 0.3s;
+      font-size: 15px;
+      outline: none;
+      transition: 0.25s ease;
+      appearance: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.16);
+    }
+
+    select {
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+        linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+      background-position:
+        calc(100% - 20px) 50%,
+        calc(100% - 15px) 50%;
+      background-size: 5px 5px;
+      background-repeat: no-repeat;
+      padding-right: 40px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 22px;
     }
 
     button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      background: var(--highlight);
-      color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 12px;
+      padding: 13px;
       cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      transition: 0.2s ease;
     }
 
-    button:hover {
-      background: var(--button-hover);
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white;
+      box-shadow: 0 10px 24px rgba(31, 111, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.08);
+    }
+
+    .btn-secondary {
+      background: #111111;
+      color: var(--text);
+      border: 1px solid var(--line);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
 
     .result {
-      margin-top: 20px;
-      padding: 10px;
-      background: var(--result-bg);
-      border-radius: 6px;
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 16px;
+      background:
+        linear-gradient(180deg, rgba(77,163,255,0.12), transparent),
+        #080808;
+      border: 1px solid var(--line);
+    }
+
+    .result-title {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .result-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 8px 0;
+      border-bottom: 1px solid #202020;
+    }
+
+    .result-line:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .result-value {
+      color: var(--white);
+      font-weight: 800;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .total {
+      margin-top: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--accent);
+    }
+
+    .total .result-value {
+      color: var(--success);
+    }
+
+    .note {
+      margin-top: 16px;
+      color: var(--muted);
       text-align: center;
-      line-height: 1.6;
-      font-weight: bold;
-      transition: background 0.3s;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      margin-top: 16px;
+      color: #6b7280;
+      text-align: center;
+      font-size: 12px;
+      letter-spacing: 0.8px;
+    }
+
+    @media (max-width: 440px) {
+      body {
+        padding: 12px;
+      }
+
+      .header {
+        padding: 26px 20px 22px;
+      }
+
+      .content {
+        padding: 22px;
+      }
+
+      .row,
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 21px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h2>S0 Attendance (Non-Design) Calculator</h2>
+  <main class="app">
+    <section class="card">
+      <header class="header">
+        <div class="logo-wrap">
+          <svg class="logo" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-label="S0 Attendance Logo">
+            <defs>
+              <linearGradient id="s0Gradient" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="55%" stop-color="#4da3ff"/>
+                <stop offset="100%" stop-color="#1f6feb"/>
+              </linearGradient>
+            </defs>
 
-    <label for="clockIn">Clock In Time:</label>
-    <input type="time" id="clockIn" value="07:00">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="url(#s0Gradient)" stroke-width="5"/>
+            <circle cx="60" cy="60" r="38" fill="none" stroke="#2a2a2a" stroke-width="2"/>
 
-    <label for="leaveType">Leave Type:</label>
-    <select id="leaveType">
-      <option value="full">Full Day</option>
-      <option value="1st">1st Half Leave</option>
-      <option value="2nd">2nd Half Leave</option>
-    </select>
+            <line x1="60" y1="60" x2="60" y2="36" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+            <line x1="60" y1="60" x2="80" y2="70" stroke="#4da3ff" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="60" cy="60" r="5" fill="#ffffff"/>
 
-    <label for="otHours">OT Hours:</label>
-    <select id="otHours">
-      <option value="0">No OT</option>
-      <option value="1">1 hour</option>
-      <option value="2">2 hours</option>
-      <option value="3">3 hours</option>
-      <option value="4">4 hours</option>
-      <option value="5">5 hours</option>
-      <option value="6">6 hours</option>
-      <option value="7">7 hours</option>
-      <option value="8">8 hours</option>
-      <option value="9">9 hours</option>
-      <option value="10">10 hours</option>
-    </select>
+            <text x="60" y="101" text-anchor="middle" font-size="18" font-weight="900" fill="#ffffff" font-family="Arial, Helvetica, sans-serif">
+              S0
+            </text>
+          </svg>
+        </div>
 
-    <button onclick="calculateTimes()">Calculate</button>
+        <h1>S0 Attendance</h1>
+        <p class="subtitle">Non-Design Time Calculator</p>
+        <div class="sony-line"></div>
+      </header>
 
-    <div class="result" id="result">Result will appear here</div>
-  </div>
+      <div class="content">
+        <div class="field">
+          <label for="clockIn">Clock-In Time</label>
+          <input type="time" id="clockIn" value="07:00" />
+        </div>
+
+        <div class="field">
+          <label for="leaveType">Leave Type</label>
+          <select id="leaveType">
+            <option value="full">Full Day</option>
+            <option value="1st">1st Half Leave</option>
+            <option value="2nd">2nd Half Leave</option>
+          </select>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="otHours">OT Hours</label>
+            <select id="otHours">
+              <option value="0">No OT</option>
+              <option value="1">1 hour</option>
+              <option value="2">2 hours</option>
+              <option value="3">3 hours</option>
+              <option value="4">4 hours</option>
+              <option value="5">5 hours</option>
+              <option value="6">6 hours</option>
+              <option value="7">7 hours</option>
+              <option value="8">8 hours</option>
+              <option value="9">9 hours</option>
+              <option value="10">10 hours</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="timeFormat">Time Format</label>
+            <select id="timeFormat">
+              <option value="12">12-hour</option>
+              <option value="24">24-hour</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="btn-primary" onclick="calculateTimes()">Calculate</button>
+          <button class="btn-secondary" onclick="resetForm()">Reset</button>
+        </div>
+
+        <div class="result" id="result">
+          <div class="result-title">Result</div>
+          <div class="result-line">
+            <span class="result-label">Status</span>
+            <span class="result-value">Enter details</span>
+          </div>
+        </div>
+
+        <p class="note">
+          OT includes an additional 10 minutes when OT is selected.
+        </p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      S0 Attendance Calculator • Published by ALIF
+    </footer>
+  </main>
 
   <script>
+    const clockInInput = document.getElementById("clockIn");
+    const leaveTypeInput = document.getElementById("leaveType");
+    const otHoursInput = document.getElementById("otHours");
+    const timeFormatInput = document.getElementById("timeFormat");
+    const resultDiv = document.getElementById("result");
+
+    const BASE_START = { h: 7, m: 0 };
+    const BASE_HALF = { h: 11, m: 45 };
+    const BASE_OUT = { h: 16, m: 30 };
+
     function calculateTimes() {
-      const clockIn = document.getElementById("clockIn").value;
-      const leaveType = document.getElementById("leaveType").value;
-      const otHours = parseInt(document.getElementById("otHours").value);
-      const resultDiv = document.getElementById("result");
+      const clockIn = clockInInput.value;
+      const leaveType = leaveTypeInput.value;
+      const otHours = parseInt(otHoursInput.value, 10);
+      const timeFormat = timeFormatInput.value;
 
       if (!clockIn) {
-        resultDiv.textContent = "Please enter your clock-in time.";
+        showMessage("Please enter clock-in time.");
         return;
       }
 
-      const baseStart = { h: 7, m: 0 };
-      const baseHalf = { h: 11, m: 45 };
-      const baseOut = { h: 16, m: 30 };
+      const [clockInHour, clockInMinute] = clockIn.split(":").map(Number);
 
-      const [h, m] = clockIn.split(":").map(Number);
-      const diffMinutes = (h - baseStart.h) * 60 + (m - baseStart.m);
+      const diffMinutes =
+        (clockInHour - BASE_START.h) * 60 +
+        (clockInMinute - BASE_START.m);
 
-      function addMinutes(time, mins) {
-        let newH = time.h;
-        let newM = time.m + mins;
-        while (newM >= 60) { newH++; newM -= 60; }
-        while (newM < 0) { newH--; newM += 60; }
-        return { h: newH, m: newM };
-      }
-
-      let halfDay = addMinutes(baseHalf, diffMinutes);
-      let fullOut = addMinutes(baseOut, diffMinutes);
+      const halfDayTime = addMinutes(BASE_HALF, diffMinutes);
+      let fullOutTime = addMinutes(BASE_OUT, diffMinutes);
 
       const otMinutes = otHours > 0 ? (otHours * 60) + 10 : 0;
-      let resultHTML = "";
+
+      let title = "";
+      let rows = [];
       let totalWorkMinutes = 0;
 
       if (leaveType === "full") {
-        fullOut = addMinutes(fullOut, otMinutes);
+        title = "Full Day";
+
+        fullOutTime = addMinutes(fullOutTime, otMinutes);
         totalWorkMinutes = (9.5 * 60) + otMinutes;
-        resultHTML = `
-          <div>Clock-In: <strong>${formatTime(h, m)}</strong></div>
-          <div>Half Day: <strong>${formatTime(halfDay.h, halfDay.m)}</strong></div>
-          <div>Clock-Out: <strong>${formatTime(fullOut.h, fullOut.m)}</strong></div>
-        `;
-      } else if (leaveType === "1st") {
-        let secondHalfIn = halfDay;
-        let secondHalfOut = addMinutes(secondHalfIn, 4 * 60 + 45 + otMinutes);
-        totalWorkMinutes = (4.75 * 60) + otMinutes;
-        resultHTML = `
-          <div><strong>1st Half Leave</strong></div>
-          <div>Clock-In (Start Work): <strong>${formatTime(secondHalfIn.h, secondHalfIn.m)}</strong></div>
-          <div>Clock-Out: <strong>${formatTime(secondHalfOut.h, secondHalfOut.m)}</strong></div>
-        `;
-      } else if (leaveType === "2nd") {
-        let firstHalfOut = addMinutes(halfDay, otMinutes);
-        totalWorkMinutes = (4.75 * 60) + otMinutes;
-        resultHTML = `
-          <div><strong>2nd Half Leave</strong></div>
-          <div>Clock-In: <strong>${formatTime(h, m)}</strong></div>
-          <div>Clock-Out (Half Day): <strong>${formatTime(firstHalfOut.h, firstHalfOut.m)}</strong></div>
-        `;
+
+        rows = [
+          ["Clock-In", formatTime(clockInHour, clockInMinute, timeFormat)],
+          ["Half Day", formatTime(halfDayTime.h, halfDayTime.m, timeFormat)],
+          ["Clock-Out", formatTime(fullOutTime.h, fullOutTime.m, timeFormat)]
+        ];
       }
 
-      const totalH = Math.floor(totalWorkMinutes / 60);
-      const totalM = totalWorkMinutes % 60;
-      resultHTML += `<div>Total Working Time: <strong>${totalH}h ${totalM}m</strong></div>`;
+      if (leaveType === "1st") {
+        title = "1st Half Leave";
 
-      resultDiv.innerHTML = resultHTML;
+        const secondHalfIn = halfDayTime;
+        const secondHalfOut = addMinutes(secondHalfIn, (4 * 60) + 45 + otMinutes);
+
+        totalWorkMinutes = (4.75 * 60) + otMinutes;
+
+        rows = [
+          ["Start Work", formatTime(secondHalfIn.h, secondHalfIn.m, timeFormat)],
+          ["Clock-Out", formatTime(secondHalfOut.h, secondHalfOut.m, timeFormat)]
+        ];
+      }
+
+      if (leaveType === "2nd") {
+        title = "2nd Half Leave";
+
+        const firstHalfOut = addMinutes(halfDayTime, otMinutes);
+
+        totalWorkMinutes = (4.75 * 60) + otMinutes;
+
+        rows = [
+          ["Clock-In", formatTime(clockInHour, clockInMinute, timeFormat)],
+          ["Clock-Out", formatTime(firstHalfOut.h, firstHalfOut.m, timeFormat)]
+        ];
+      }
+
+      const totalHours = Math.floor(totalWorkMinutes / 60);
+      const totalMinutes = totalWorkMinutes % 60;
+
+      rows.push(["OT Selected", otHours === 0 ? "No OT" : `${otHours} hour(s)`]);
+      rows.push(["Total Working Time", `${totalHours}h ${totalMinutes}m`]);
+
+      renderResult(title, rows);
     }
 
-    function formatTime(h, m) {
+    function addMinutes(time, minutesToAdd) {
+      let totalMinutes = (time.h * 60) + time.m + minutesToAdd;
+
+      totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
+
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+
+      return { h, m };
+    }
+
+    function formatTime(h, m, format) {
+      if (format === "24") {
+        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      }
+
       const ampm = h >= 12 ? "PM" : "AM";
-      let hour12 = h % 12 || 12;
-      return `${hour12}:${m.toString().padStart(2, "0")} ${ampm}`;
+      const hour12 = h % 12 || 12;
+
+      return `${hour12}:${String(m).padStart(2, "0")} ${ampm}`;
     }
+
+    function renderResult(title, rows) {
+      let html = `<div class="result-title">${title}</div>`;
+
+      rows.forEach(([label, value]) => {
+        const isTotal = label === "Total Working Time";
+
+        html += `
+          <div class="result-line ${isTotal ? "total" : ""}">
+            <span class="result-label">${label}</span>
+            <span class="result-value">${value}</span>
+          </div>
+        `;
+      });
+
+      resultDiv.innerHTML = html;
+    }
+
+    function showMessage(message) {
+      resultDiv.innerHTML = `
+        <div class="result-title">Result</div>
+        <div class="result-line">
+          <span class="result-label">Status</span>
+          <span class="result-value">${message}</span>
+        </div>
+      `;
+    }
+
+    function resetForm() {
+      clockInInput.value = "07:00";
+      leaveTypeInput.value = "full";
+      otHoursInput.value = "0";
+      timeFormatInput.value = "12";
+      calculateTimes();
+    }
+
+    clockInInput.addEventListener("input", calculateTimes);
+    leaveTypeInput.addEventListener("change", calculateTimes);
+    otHoursInput.addEventListener("change", calculateTimes);
+    timeFormatInput.addEventListener("change", calculateTimes);
+
+    calculateTimes();
   </script>
 </body>
 </html>
